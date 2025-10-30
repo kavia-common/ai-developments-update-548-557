@@ -1,82 +1,95 @@
-# Lightweight React Template for KAVIA
+# AI Developments Frontend (React + Ocean Professional)
 
-This project provides a minimal React template with a clean, modern UI and minimal dependencies.
+This app lists the latest AI developments from the last 48 hours. It can fetch directly from public providers or use a built-in mock dataset for demos/offline use. Styled with the Ocean Professional theme.
 
 ## Features
 
-- **Lightweight**: No heavy UI frameworks - uses only vanilla CSS and React
-- **Modern UI**: Clean, responsive design with KAVIA brand styling
-- **Fast**: Minimal dependencies for quick loading times
-- **Simple**: Easy to understand and modify
+- Modern, responsive UI (no heavy UI frameworks)
+- Provider-based fetching:
+  - HN (Hacker News Algolia) – default, no API key required
+  - NewsAPI – requires REACT_APP_NEWSAPI_KEY
+  - GNews – requires REACT_APP_GNEWS_KEY
+- Optional mock data mode for quick demos
+- Debounced search and manual refresh
+- Accessible components with subtle transitions and gradients
 
-## Getting Started
+## Quick Start
 
-In the project directory, you can run:
+1) Install dependencies
+   npm install
 
-### `npm start`
+2) Configure environment
+   - Copy the example env file:
+     cp .env.example .env
+   - Choose your data provider and keys (see “Configuration” below).
+   - For a quick demo without keys, you can:
+     - Leave REACT_APP_DATA_PROVIDER=HN (no key needed), OR
+     - Set REACT_APP_USE_MOCK=true to use the bundled mock data.
 
-Runs the app in development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+3) Run the app
+   npm start
 
-### `npm test`
+Open http://localhost:3000 in your browser.
 
-Launches the test runner in interactive watch mode.
+## Configuration
 
-### `npm run build`
+This project uses Create React App, so env vars must be prefixed with REACT_APP_. Configure the following in your .env:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- REACT_APP_DATA_PROVIDER
+  - HN (default) – Hacker News Algolia. No key required.
+  - NEWSAPI – Requires REACT_APP_NEWSAPI_KEY.
+  - GNEWS – Requires REACT_APP_GNEWS_KEY.
 
-## Customization
+- REACT_APP_USE_MOCK
+  - true or false. When true, the app serves a small, recent mock dataset and does not call external providers.
+  - Useful for demos, offline development, or when no API keys are available.
 
-### Colors
+- REACT_APP_NEWSAPI_KEY
+  - Only required if REACT_APP_DATA_PROVIDER=NEWSAPI.
+  - Get a key at https://newsapi.org/
 
-The main brand colors are defined as CSS variables in `src/App.css`:
+- REACT_APP_GNEWS_KEY
+  - Only required if REACT_APP_DATA_PROVIDER=GNEWS.
+  - Get a key at https://gnews.io/
 
-```css
-:root {
-  --kavia-orange: #E87A41;
-  --kavia-dark: #1A1A1A;
-  --text-color: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --border-color: rgba(255, 255, 255, 0.1);
-}
-```
+Example .env (or see .env.example):
 
-### Components
+REACT_APP_DATA_PROVIDER=HN
+REACT_APP_USE_MOCK=false
+REACT_APP_NEWSAPI_KEY=
+REACT_APP_GNEWS_KEY=
 
-This template uses pure HTML/CSS components instead of a UI framework. You can find component styles in `src/App.css`. 
+Provider selection and behavior:
+- HN:
+  - Uses the “search_by_date” endpoint from HN Algolia to retrieve recent AI-related stories.
+  - No API key required.
+- NEWSAPI:
+  - Requires REACT_APP_NEWSAPI_KEY.
+  - Fetches recent English articles for AI-related terms.
+- GNEWS:
+  - Requires REACT_APP_GNEWS_KEY.
+  - Fetches recent English articles for AI-related terms.
 
-Common components include:
-- Buttons (`.btn`, `.btn-large`)
-- Container (`.container`)
-- Navigation (`.navbar`)
-- Typography (`.title`, `.subtitle`, `.description`)
+Mock usage:
+- When REACT_APP_USE_MOCK=true, the app returns a curated set of recent, realistic items with timestamps within the last 48 hours.
+- The same filtering, sorting, and relative time formatting are applied as with live providers.
+
+## Available Scripts
+
+- npm start
+  Runs the app in development mode at http://localhost:3000
+
+- npm test
+  Launches the test runner in interactive watch mode.
+
+- npm run build
+  Builds the app for production in the build folder with optimized assets.
+
+## Theming
+
+Ocean Professional theme tokens are defined in src/App.css and applied across components (cards, header, buttons, banners, etc.). Light and dark modes are supported via the data-theme attribute on the document element.
 
 ## Learn More
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- React docs: https://reactjs.org/
+- CRA advanced topics: https://facebook.github.io/create-react-app/docs/getting-started
