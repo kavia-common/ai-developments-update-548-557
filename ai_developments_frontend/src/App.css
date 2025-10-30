@@ -1,24 +1,44 @@
 /* CSS Variables for Theme Management */
 :root {
-  /* Light theme colors */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8f9fa;
-  --text-primary: #282c34;
-  --text-secondary: #61dafb;
-  --border-color: #e9ecef;
-  --button-bg: #007bff;
+  /* Ocean Professional - light */
+  --op-primary: #2563EB; /* primary blue */
+  --op-secondary: #F59E0B; /* amber */
+  --op-error: #EF4444;
+  --op-surface: #ffffff;
+  --op-background: #f9fafb;
+  --op-text: #111827;
+  --op-text-muted: #6b7280;
+  --op-border: #e5e7eb;
+
+  /* Backwards compatibility with template vars */
+  --bg-primary: var(--op-background);
+  --bg-secondary: #ffffff;
+  --text-primary: var(--op-text);
+  --text-secondary: #2563EB;
+  --border-color: var(--op-border);
+  --button-bg: var(--op-primary);
   --button-text: #ffffff;
 }
 
 [data-theme="dark"] {
-  /* Dark theme colors */
-  --bg-primary: #1a1a1a;
-  --bg-secondary: #282c34;
-  --text-primary: #ffffff;
-  --text-secondary: #61dafb;
-  --border-color: #404040;
-  --button-bg: #0056b3;
-  --button-text: #ffffff;
+  /* Ocean Professional - dark */
+  --op-primary: #60A5FA;
+  --op-secondary: #F59E0B;
+  --op-error: #F87171;
+  --op-surface: #111827;
+  --op-background: #0b1020;
+  --op-text: #F9FAFB;
+  --op-text-muted: #9CA3AF;
+  --op-border: #1f2937;
+
+  /* Backwards compatibility with template vars */
+  --bg-primary: var(--op-background);
+  --bg-secondary: var(--op-surface);
+  --text-primary: var(--op-text);
+  --text-secondary: var(--op-primary);
+  --border-color: var(--op-border);
+  --button-bg: var(--op-primary);
+  --button-text: #0b1020;
 }
 
 .App {
@@ -27,6 +47,34 @@
   color: var(--text-primary);
   min-height: 100vh;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Ocean Professional utilities */
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.op-btn {
+  font-size: 14px;
+  font-weight: 600;
+  transition: all .2s ease;
+}
+.op-btn--primary {
+  background: var(--op-primary);
+  color: #fff;
+  border: 1px solid transparent;
+}
+.op-btn--ghost {
+  background: var(--op-surface);
+  color: var(--op-text);
+  border: 1px solid var(--op-border);
+}
+.op-btn:hover {
+  filter: brightness(0.98);
+}
+.op-btn:active {
+  transform: translateY(1px);
 }
 
 .App-logo {
@@ -56,6 +104,17 @@
 .App-link {
   color: var(--text-secondary);
   transition: color 0.3s ease;
+}
+
+.op-header {
+  background: var(--op-surface);
+}
+.dev-card:hover {
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  transform: translateY(-1px);
+}
+.dev-card__link:hover {
+  text-decoration: underline;
 }
 
 .theme-toggle {
