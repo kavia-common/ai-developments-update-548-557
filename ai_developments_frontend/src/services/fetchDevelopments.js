@@ -7,7 +7,13 @@
  *
  * PUBLIC_INTERFACE
  * export async function fetchDevelopments(queryText = '')
- * Returns a list of DevelopmentItem:
+ * Returns a list of DevelopmentItem and a metadata flag:
+ * {
+ *   items: DevelopmentItem[],
+ *   usedMock: boolean
+ * }
+ *
+ * DevelopmentItem:
  * {
  *   id: string,
  *   title: string,
@@ -21,6 +27,7 @@
  */
 
 import { nowMinusHours, isWithinLastHours, formatRelativeTime } from '../utils/date';
+import staticMock from '../data/mockDevelopments.json';
 
 /**
  * Extract hostname from a URL for display as source.
@@ -45,44 +52,39 @@ function buildAiQuery() {
 }
 
 /**
- * Small mock dataset with recent timestamps relative to now.
- * These will be used when REACT_APP_USE_MOCK is true or as a fallback on error.
+ * Parse URL flags for mock usage:
+ * - ?mock=1 | ?mock=true
+ * - #mock (any hash exactly "mock" or containing "mock")
+ * Falls back to a global window.__USE_MOCK if set by index.js.
+ */
+function urlMockEnabled() {
+  try {
+    const searchParams = new URLSearchParams(window.location.search || '');
+    const mockParam = searchParams.get('mock');
+    const hasQueryMock = mockParam && ['1', 'true', 'on', 'yes'].includes(String(mockParam).toLowerCase());
+    const hasHashMock = (window.location.hash || '').toLowerCase().includes('mock');
+    const globalFlag = Boolean(window.__USE_MOCK);
+    return Boolean(hasQueryMock || hasHashMock || globalFlag);
+  } catch {
+    return Boolean(window && window.__USE_MOCK);
+  }
+}
+
+/**
+ * Small mock dataset builder. Uses static JSON as base and ensures fields.
+ * If the static data timestamps drift out of 48h window, callers can bypass filter when forced mock is true.
  */
 function buildMockData() {
-  const now = new Date();
-  const twoHoursAgo = new Date(now.getTime() - 2 * 60 * 60 * 1000).toISOString();
-  const sixHoursAgo = new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString();
-  const twentyHoursAgo = new Date(now.getTime() - 20 * 60 * 60 * 1000).toISOString();
-
-  return [
-    {
-      id: 'mock-1',
-      title: 'OpenAI updates GPT model latency for faster responses',
-      url: 'https://openai.com/blog/gpt-latency-improvements',
-      source: 'openai.com',
-      publishedAt: twoHoursAgo,
-      summary: 'OpenAI announces infrastructure and model tweaks that significantly improve response latency.',
-      tags: ['OpenAI', 'GPT', 'Latency'],
-    },
-    {
-      id: 'mock-2',
-      title: 'Anthropic releases Claude update focusing on safety',
-      url: 'https://www.anthropic.com/news/claude-safety-update',
-      source: 'anthropic.com',
-      publishedAt: sixHoursAgo,
-      summary: 'Claude receives new guardrails and safety improvements to reduce harmful outputs.',
-      tags: ['Anthropic', 'Claude', 'Safety'],
-    },
-    {
-      id: 'mock-3',
-      title: 'Meta Llama research shares new pretraining techniques',
-      url: 'https://ai.meta.com/blog/llama-pretraining-techniques',
-      source: 'ai.meta.com',
-      publishedAt: twentyHoursAgo,
-      summary: 'Meta AI shares advances in pretraining methods for Llama-based models.',
-      tags: ['Meta', 'Llama', 'Research'],
-    },
-  ];
+  // Normalize static mock to ensure fields are present and correct types
+  return (staticMock || []).map((m, idx) => ({
+    id: m.id || `mock-${idx}`,
+    title: m.title || 'AI development',
+    url: m.url || 'https://example.com',
+    source: m.source || (m.url ? getDomain(m.url) : 'mock'),
+    publishedAt: m.publishedAt || new Date().toISOString(),
+    summary: m.summary || '',
+    tags: Array.isArray(m.tags) ? m.tags : undefined,
+  }));
 }
 
 /**
@@ -217,16 +219,12 @@ async function fetchFromProvider(provider) {
   const query = buildAiQuery();
 
   if (provider === 'HN') {
-    const endpoint = 'https://hn.algolia.com/api/v1/search';
     const params = new URLSearchParams({
       tags: 'story',
       query,
       restrictSearchableAttributes: 'title',
-      hitsPerPage: '50',
-      // Sorting by created_at_i desc can be achieved by using "search_by_date",
-      // but we can sort client-side as well. We'll use search_by_date for recency.
+      hitsPerPage: '50'
     });
-    // Prefer the 'search_by_date' endpoint for latest
     const url = `https://hn.algolia.com/api/v1/search_by_date?${params.toString()}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error(`HN fetch failed: ${res.status}`);
@@ -253,9 +251,7 @@ async function fetchFromProvider(provider) {
       language: 'en',
     });
     const res = await fetch(`${endpoint}?${params.toString()}`, {
-      headers: {
-        Authorization: `Bearer ${key}`,
-      },
+      headers: { Authorization: `Bearer ${key}` },
     });
     if (!res.ok) throw new Error(`NewsAPI fetch failed: ${res.status}`);
     const data = await res.json();
@@ -288,52 +284,72 @@ async function fetchFromProvider(provider) {
   return fetchFromProvider('HN');
 }
 
+/**
+ * PUBLIC_INTERFACE
+ * fetchDevelopments
+ * Fetch AI developments with robust mock handling.
+ * Behavior:
+ * - Mock is active if any of the following is true:
+ *   - process.env.REACT_APP_USE_MOCK === 'true'
+ *   - URL contains ?mock=1 or ?mock=true
+ *   - URL hash contains #mock
+ *   - window.__USE_MOCK is truthy (set at startup in index.js)
+ * - When mock is forced (via URL/hash/global), bypass 48h filter if dataset is older.
+ * - When provider fetch errors or returns 0 items, automatically fall back to mock.
+ * Returns: { items: DevelopmentItem[], usedMock: boolean }
+ */
 // PUBLIC_INTERFACE
 export async function fetchDevelopments(queryText = '') {
-  /**
-   * Fetch AI developments from the selected provider, with mock fallback.
-   * - Select provider based on REACT_APP_DATA_PROVIDER: HN | NEWSAPI | GNEWS (default HN)
-   * - If REACT_APP_USE_MOCK === 'true', return mock data filtered to 48h
-   * - Deduplicate by URL
-   * - Filter to last 48h and apply optional query filter (title contains queryText)
-   * - Sort by publishedAt desc
-   * - Compute relativeTime
-   *
-   * @param {string} queryText - Optional filter term (case-insensitive) applied to item titles
-   * @returns {Promise<Array>} Array of DevelopmentItem
-   */
   const HOURS = 48;
   const provider = (process.env.REACT_APP_DATA_PROVIDER || 'HN').toUpperCase();
-  const useMock = (process.env.REACT_APP_USE_MOCK || 'false').toLowerCase() === 'true';
 
-  try {
-    // Mock path
-    if (useMock) {
-      const mock = buildMockData();
-      const within = filterWithinHours(mock, HOURS);
-      const filtered = applyTitleFilter(within, queryText);
-      const sorted = filtered.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
-      return addRelativeTime(sorted);
-    }
+  const envMock = (process.env.REACT_APP_USE_MOCK || 'false').toLowerCase() === 'true';
+  const forceMock = urlMockEnabled();
+  const mockOn = envMock || forceMock;
 
-    // Provider fetch
-    const items = await fetchFromProvider(provider);
-
-    // Normalize downstream pipeline
+  const runPipeline = (items) => {
     const deduped = dedupeByUrl(items);
-    const within = filterWithinHours(deduped, HOURS);
-    const filtered = applyTitleFilter(within, queryText);
+    const filtered = applyTitleFilter(deduped, queryText);
     const sorted = filtered.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
     return addRelativeTime(sorted);
-  } catch (err) {
-    // Robust error handling with mock fallback
-    // eslint-disable-next-line no-console
-    console.error('fetchDevelopments error:', err);
+  };
+
+  // Helper to prepare mock respecting/bypassing date filter
+  const prepareMock = () => {
     const mock = buildMockData();
     const within = filterWithinHours(mock, HOURS);
-    const filtered = applyTitleFilter(within, queryText);
-    const sorted = filtered.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
-    return addRelativeTime(sorted);
+    const hasWithin = within.length > 0;
+    const base = (forceMock && !hasWithin) ? mock : within;
+    return runPipeline(base);
+  };
+
+  try {
+    if (mockOn) {
+      return { items: prepareMock(), usedMock: true };
+    }
+
+    // Live path
+    const items = await fetchFromProvider(provider);
+    let processed = items;
+
+    // If provider returns empty, fallback to mock automatically
+    if (!Array.isArray(processed) || processed.length === 0) {
+      return { items: prepareMock(), usedMock: true };
+    }
+
+    // Enforce 48h after fetch
+    processed = filterWithinHours(processed, HOURS);
+
+    // If nothing remains after 48h filter, fallback to mock
+    if (!processed.length) {
+      return { items: prepareMock(), usedMock: true };
+    }
+
+    return { items: runPipeline(processed), usedMock: false };
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error('fetchDevelopments error:', err);
+    return { items: prepareMock(), usedMock: true };
   }
 }
 

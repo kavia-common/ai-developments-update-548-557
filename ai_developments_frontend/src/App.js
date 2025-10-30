@@ -31,6 +31,7 @@ function App() {
     query,
     setQuery,
     refresh,
+    mockActive,
   } = useRecentDevelopments();
 
   const [theme, setTheme] = useState('light');
@@ -49,7 +50,6 @@ function App() {
     if (!lastUpdated) return '';
     const d = lastUpdated;
     return `${d.toLocaleDateString()} ${d.toLocaleTimeString()}`;
-    // Optionally: could format nicer; keeping native for zero deps.
   }, [lastUpdated]);
 
   return (
@@ -96,6 +96,29 @@ function App() {
           </>
         }
       />
+
+      {/* Mock mode banner */}
+      {mockActive ? (
+        <div
+          className="container"
+          style={{ padding: '8px 20px 0' }}
+          aria-live="polite"
+        >
+          <div
+            className="op-card"
+            style={{
+              background: 'linear-gradient(135deg, rgba(37,99,235,0.10), rgba(255,255,255,1))',
+              border: '1px solid var(--op-border, #e5e7eb)',
+              borderRadius: 10,
+              padding: 10,
+              fontSize: 12,
+              color: 'var(--op-text, #111827)',
+            }}
+          >
+            <strong>Mock data mode is ON</strong> — using local dataset for demo/offline.
+          </div>
+        </div>
+      ) : null}
 
       <main
         role="main"

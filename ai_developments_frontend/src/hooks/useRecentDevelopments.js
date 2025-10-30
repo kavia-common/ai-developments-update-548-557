@@ -10,7 +10,7 @@ import { fetchDevelopments as fetchService } from "../services/fetchDevelopments
  *
  * Exposed API:
  * {
- *   items,           // full fetched & processed list (sorted, deduped, 48h enforced by service)
+ *   items,           // full fetched & processed list
  *   filteredItems,   // items filtered by current query
  *   loading,         // boolean loading state
  *   error,           // string | null
@@ -18,6 +18,7 @@ import { fetchDevelopments as fetchService } from "../services/fetchDevelopments
  *   query,           // current search query string
  *   setQuery,        // setter for query
  *   refresh,         // function to re-fetch from the service
+ *   mockActive,      // boolean - whether mock data is currently active
  * }
  */
 export function useRecentDevelopments() {
@@ -27,6 +28,7 @@ export function useRecentDevelopments() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [mockActive, setMockActive] = useState(false);
 
   // Keep a mounted ref to avoid setting state after unmount.
   const mountedRef = useRef(true);
@@ -48,10 +50,10 @@ export function useRecentDevelopments() {
     setLoading(true);
     setError(null);
     try {
-      // Note: Service already enforces 48h window, dedup, sort, and relative time.
-      const data = await fetchService("");
+      const { items: svcItems, usedMock } = await fetchService("");
       if (!mountedRef.current) return;
-      setItems(Array.isArray(data) ? data : []);
+      setItems(Array.isArray(svcItems) ? svcItems : []);
+      setMockActive(Boolean(usedMock));
       setLastUpdated(new Date());
     } catch (err) {
       if (!mountedRef.current) return;
@@ -84,6 +86,7 @@ export function useRecentDevelopments() {
     query,
     setQuery,
     refresh,
+    mockActive,
   };
 }
 

@@ -1,0 +1,66 @@
+[
+  {
+    "id": "mock-001",
+    "title": "OpenAI introduces faster inference pipeline for GPT models",
+    "url": "https://openai.com/blog/faster-gpt-inference",
+    "source": "openai.com",
+    "publishedAt": "2024-10-29T15:20:00.000Z",
+    "summary": "OpenAI unveils improvements to reduce latency and increase throughput across popular GPT endpoints."
+  },
+  {
+    "id": "mock-002",
+    "title": "Anthropic shares new safety evaluations for Claude models",
+    "url": "https://www.anthropic.com/news/claude-safety-evaluations",
+    "source": "anthropic.com",
+    "publishedAt": "2024-10-29T10:05:00.000Z",
+    "summary": "A detailed look at Anthropic’s methods for assessing safety and reducing harmful outputs in Claude."
+  },
+  {
+    "id": "mock-003",
+    "title": "Meta AI publishes research on Llama training optimizations",
+    "url": "https://ai.meta.com/blog/llama-training-optimizations",
+    "source": "ai.meta.com",
+    "publishedAt": "2024-10-28T22:40:00.000Z",
+    "summary": "Meta researchers explore pretraining and fine-tuning strategies to improve performance and efficiency."
+  },
+  {
+    "id": "mock-004",
+    "title": "Google DeepMind: Efficient multimodal reasoning with Gemini",
+    "url": "https://deepmind.google/discover/blog/gemini-efficient-multimodal-reasoning",
+    "source": "deepmind.google",
+    "publishedAt": "2024-10-29T06:45:00.000Z",
+    "summary": "Insights into how Gemini handles image, text, and code tasks with lower compute cost."
+  },
+  {
+    "id": "mock-005",
+    "title": "Stability AI updates Stable Diffusion model for better fine-detail",
+    "url": "https://stability.ai/blog/stable-diffusion-detail-update",
+    "source": "stability.ai",
+    "publishedAt": "2024-10-29T01:15:00.000Z",
+    "summary": "The latest release focuses on improving object coherence and fine detail rendering."
+  },
+  {
+    "id": "mock-006",
+    "title": "Cohere announces enterprise features for RAG pipelines",
+    "url": "https://cohere.com/blog/enterprise-rag-features",
+    "source": "cohere.com",
+    "publishedAt": "2024-10-28T20:10:00.000Z",
+    "summary": "Cohere adds governance controls and observability tools for production RAG architectures."
+  },
+  {
+    "id": "mock-007",
+    "title": "Hugging Face Spaces adds streamlined deployment presets",
+    "url": "https://huggingface.co/blog/spaces-deployment-presets",
+    "source": "huggingface.co",
+    "publishedAt": "2024-10-29T12:30:00.000Z",
+    "summary": "New presets reduce setup time for common ML demos and hosted apps."
+  },
+  {
+    "id": "mock-008",
+    "title": "Mistral AI: Update on open weights and license changes",
+    "url": "https://mistral.ai/news/open-weights-license-update",
+    "source": "mistral.ai",
+    "publishedAt": "2024-10-29T03:25:00.000Z",
+    "summary": "Clarifications on usage terms and distribution for recent open-weight model releases."
+  }
+]

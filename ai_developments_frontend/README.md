@@ -23,8 +23,9 @@ This app lists the latest AI developments from the last 48 hours. It can fetch d
      cp .env.example .env
    - Choose your data provider and keys (see “Configuration” below).
    - To run completely offline or avoid all external requests, enable mock mode:
-     - Set REACT_APP_USE_MOCK=true in your .env (default in .env.example).
-     - This makes the app load a local mock dataset and skip any network calls.
+     - Set REACT_APP_USE_MOCK=true in your .env (default in .env.example), OR
+     - Append ?mock=1 to the URL (e.g., http://localhost:3000/?mock=1) OR add #mock (e.g., http://localhost:3000/#mock).
+       The URL/hash override is a “hard fallback” that forces mock mode even if .env isn’t picked up.
 
    Alternatively, to use a live provider without keys:
    - Leave REACT_APP_DATA_PROVIDER=HN (no key needed) and set REACT_APP_USE_MOCK=false.
@@ -80,9 +81,11 @@ Provider selection and behavior:
   - Fetches recent English articles for AI-related terms.
 
 Mock usage:
-- When REACT_APP_USE_MOCK=true, the app returns a curated set of recent, realistic items with timestamps within the last 48 hours.
+- When mock mode is on (env, URL, or hash), the app returns a curated set of realistic items from a local static dataset (src/data/mockDevelopments.json).
+- A banner “Mock data mode is ON” appears at the top to make the mode visible.
 - The same filtering, sorting, and relative time formatting are applied as with live providers.
-- This completely bypasses external network requests for data fetching.
+- If the dataset timestamps drift older than 48h, forcing mock via URL/hash bypasses the 48h filter so items still render.
+- If a live provider returns 0 items or fails, the app automatically falls back to mock and sets the mock banner.
 
 ## Available Scripts
 
