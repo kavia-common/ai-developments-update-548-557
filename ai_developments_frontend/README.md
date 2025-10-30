@@ -22,9 +22,12 @@ This app lists the latest AI developments from the last 48 hours. It can fetch d
    - Copy the example env file:
      cp .env.example .env
    - Choose your data provider and keys (see “Configuration” below).
-   - For a quick demo without keys, you can:
-     - Leave REACT_APP_DATA_PROVIDER=HN (no key needed), OR
-     - Set REACT_APP_USE_MOCK=true to use the bundled mock data.
+   - To run completely offline or avoid all external requests, enable mock mode:
+     - Set REACT_APP_USE_MOCK=true in your .env (default in .env.example).
+     - This makes the app load a local mock dataset and skip any network calls.
+
+   Alternatively, to use a live provider without keys:
+   - Leave REACT_APP_DATA_PROVIDER=HN (no key needed) and set REACT_APP_USE_MOCK=false.
 
 3) Run the app
    npm start
@@ -46,8 +49,9 @@ This project uses Create React App, so env vars must be prefixed with REACT_APP_
   - GNEWS – Requires REACT_APP_GNEWS_KEY.
 
 - REACT_APP_USE_MOCK
-  - true or false. When true, the app serves a small, recent mock dataset and does not call external providers.
-  - Useful for demos, offline development, or when no API keys are available.
+  - true or false.
+  - When true, the app serves a small, recent mock dataset and does not call external providers (no network traffic for data).
+  - Useful for demos, offline development, CI environments, or when no API keys are available.
 
 - REACT_APP_NEWSAPI_KEY
   - Only required if REACT_APP_DATA_PROVIDER=NEWSAPI.
@@ -60,7 +64,7 @@ This project uses Create React App, so env vars must be prefixed with REACT_APP_
 Example .env (or see .env.example):
 
 REACT_APP_DATA_PROVIDER=HN
-REACT_APP_USE_MOCK=false
+REACT_APP_USE_MOCK=true
 REACT_APP_NEWSAPI_KEY=
 REACT_APP_GNEWS_KEY=
 
@@ -78,6 +82,7 @@ Provider selection and behavior:
 Mock usage:
 - When REACT_APP_USE_MOCK=true, the app returns a curated set of recent, realistic items with timestamps within the last 48 hours.
 - The same filtering, sorting, and relative time formatting are applied as with live providers.
+- This completely bypasses external network requests for data fetching.
 
 ## Available Scripts
 
