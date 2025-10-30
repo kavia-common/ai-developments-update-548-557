@@ -1,35 +1,90 @@
-/* CSS Variables for Theme Management */
 :root {
-  /* Ocean Professional - light */
-  --op-primary: #2563EB; /* primary blue */
-  --op-secondary: #F59E0B; /* amber */
-  --op-error: #EF4444;
-  --op-surface: #ffffff;
-  --op-background: #f9fafb;
-  --op-text: #111827;
-  --op-text-muted: #6b7280;
-  --op-border: #e5e7eb;
+  /* Ocean Professional - Light Theme Tokens */
+  --op-primary: #2563EB;          /* blue-600 */
+  --op-primary-600: #2563EB;
+  --op-primary-500: #3B82F6;
+  --op-primary-400: #60A5FA;
+  --op-primary-300: #93C5FD;
+  --op-primary-200: #BFDBFE;
+  --op-primary-100: #DBEAFE;
+
+  --op-secondary: #F59E0B;        /* amber-500 */
+  --op-secondary-500: #F59E0B;
+  --op-secondary-400: #FBBF24;
+  --op-secondary-300: #FCD34D;
+
+  --op-success: #10B981;          /* emerald-500 */
+  --op-error: #EF4444;            /* red-500 */
+  --op-warning: #F59E0B;
+  --op-info: #3B82F6;
+
+  --op-surface: #ffffff;          /* card / surfaces */
+  --op-background: #f9fafb;       /* page background */
+  --op-elevated: #ffffff;
+
+  --op-text: #111827;             /* gray-900 */
+  --op-text-muted: #6b7280;       /* gray-500 */
+  --op-border: #e5e7eb;           /* gray-200 */
+
+  /* Derived tokens */
+  --op-ring: var(--op-primary-400);
+  --op-focus: 0 0 0 3px rgba(37, 99, 235, 0.35);
+
+  /* Gradients */
+  --op-grad-hero: linear-gradient(135deg, rgba(37,99,235,0.10), rgba(249,250,251,1));
+  --op-grad-card: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,1));
+  --op-grad-accent: linear-gradient(135deg, rgba(37,99,235,0.10), rgba(255,255,255,1));
+
+  /* Shadows */
+  --op-shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --op-shadow-md: 0 6px 18px rgba(0,0,0,0.08);
+  --op-shadow-lg: 0 12px 28px rgba(0,0,0,0.12);
 
   /* Backwards compatibility with template vars */
   --bg-primary: var(--op-background);
-  --bg-secondary: #ffffff;
+  --bg-secondary: var(--op-surface);
   --text-primary: var(--op-text);
-  --text-secondary: #2563EB;
+  --text-secondary: var(--op-primary);
   --border-color: var(--op-border);
   --button-bg: var(--op-primary);
   --button-text: #ffffff;
+
+  /* Error banner derived */
+  --op-error-border: #fecaca;
+  --op-error-bg: #fff1f2;
+  --op-error-text: #991b1b;
 }
 
+/* Optional Dark Theme */
 [data-theme="dark"] {
-  /* Ocean Professional - dark */
-  --op-primary: #60A5FA;
+  --op-primary: #60A5FA;    /* blue-400 */
+  --op-primary-600: #60A5FA;
+  --op-primary-500: #60A5FA;
+  --op-primary-400: #93C5FD;
+  --op-primary-300: #BFDBFE;
+  --op-primary-200: #DBEAFE;
+  --op-primary-100: #EFF6FF;
+
   --op-secondary: #F59E0B;
-  --op-error: #F87171;
-  --op-surface: #111827;
-  --op-background: #0b1020;
-  --op-text: #F9FAFB;
-  --op-text-muted: #9CA3AF;
-  --op-border: #1f2937;
+  --op-success: #34D399;    /* emerald-400 */
+  --op-error: #F87171;      /* red-400 */
+  --op-warning: #FBBF24;
+  --op-info: #60A5FA;
+
+  --op-surface: #111827;    /* gray-900 */
+  --op-background: #0b1020; /* deep ocean */
+  --op-elevated: #111827;
+
+  --op-text: #F9FAFB;       /* gray-50 */
+  --op-text-muted: #9CA3AF; /* gray-400 */
+  --op-border: #1f2937;     /* gray-800 */
+
+  --op-ring: rgba(96, 165, 250, 0.55);
+  --op-focus: 0 0 0 3px rgba(96, 165, 250, 0.45);
+
+  --op-grad-hero: linear-gradient(135deg, rgba(96,165,250,0.10), rgba(17,24,39,1));
+  --op-grad-card: linear-gradient(180deg, rgba(17,24,39,0.98), rgba(17,24,39,1));
+  --op-grad-accent: linear-gradient(135deg, rgba(96,165,250,0.10), rgba(17,24,39,1));
 
   /* Backwards compatibility with template vars */
   --bg-primary: var(--op-background);
@@ -39,36 +94,48 @@
   --border-color: var(--op-border);
   --button-bg: var(--op-primary);
   --button-text: #0b1020;
+
+  --op-error-border: #7f1d1d;
+  --op-error-bg: #1f2937;
+  --op-error-text: #fecaca;
 }
 
+/* Base app shell */
 .App {
   text-align: center;
   background-color: var(--bg-primary);
   color: var(--text-primary);
   min-height: 100vh;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 220ms ease, color 220ms ease;
 }
 
-/* Ocean Professional utilities */
+/* Layout utilities */
 .container {
   max-width: 1080px;
   margin: 0 auto;
 }
 
+/* Buttons */
 .op-btn {
   font-size: 14px;
   font-weight: 600;
-  transition: all .2s ease;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 80ms ease, filter 120ms ease;
+  border: 1px solid transparent;
+  user-select: none;
 }
 .op-btn--primary {
   background: var(--op-primary);
   color: #fff;
-  border: 1px solid transparent;
+  border-color: transparent;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.05);
 }
 .op-btn--ghost {
   background: var(--op-surface);
   color: var(--op-text);
-  border: 1px solid var(--op-border);
+  border-color: var(--op-border);
 }
 .op-btn:hover {
   filter: brightness(0.98);
@@ -76,18 +143,80 @@
 .op-btn:active {
   transform: translateY(1px);
 }
+.op-btn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
 
+/* Focus styles - accessible and consistent */
+:where(button, [role="button"], a, input, textarea, select, .op-card, .dev-card, .op-banner) {
+  outline: none;
+}
+:where(button, [role="button"], a, input, textarea, select, .op-card, .dev-card, .op-banner):focus-visible {
+  box-shadow: var(--op-focus);
+}
+
+/* Header */
+.op-header {
+  background: var(--op-surface);
+  background-image: var(--op-grad-hero);
+  border-bottom: 1px solid var(--op-border);
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+
+/* Cards */
+.op-card,
+.dev-card {
+  background: var(--op-grad-card);
+  border: 1px solid var(--op-border);
+  border-radius: 12px;
+  box-shadow: var(--op-shadow-sm);
+  transition: box-shadow 180ms ease, transform 180ms ease, border-color 180ms ease, background-color 180ms ease;
+}
+.dev-card:hover {
+  box-shadow: var(--op-shadow-md);
+  transform: translateY(-1px);
+}
+.dev-card__link {
+  color: inherit;
+  text-decoration: none;
+  transition: color 140ms ease, text-decoration-color 140ms ease;
+}
+.dev-card__link:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--op-primary);
+}
+
+/* Empty state */
+.op-empty-state {
+  background: var(--op-surface);
+  border: 1px dashed var(--op-border);
+  border-radius: 12px;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+.op-empty-state__icon {
+  background: var(--op-grad-accent);
+  border: 1px solid var(--op-border);
+}
+
+/* Banner */
+.op-banner--error {
+  border-color: var(--op-error-border);
+  background: linear-gradient(0deg, var(--op-error-bg), var(--op-error-bg));
+  color: var(--op-error-text);
+}
+
+/* Loader */
+@keyframes op-spin { to { transform: rotate(360deg); } }
+
+/* App default CRA content (retained minimal for compatibility) */
 .App-logo {
   height: 40vmin;
   pointer-events: none;
 }
-
 @media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+  .App-logo { animation: App-logo-spin infinite 20s linear; }
 }
-
 .App-header {
   background-color: var(--bg-secondary);
   min-height: 100vh;
@@ -100,23 +229,10 @@
   transition: background-color 0.3s ease;
   position: relative;
 }
-
 .App-link {
   color: var(--text-secondary);
   transition: color 0.3s ease;
 }
-
-.op-header {
-  background: var(--op-surface);
-}
-.dev-card:hover {
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-  transform: translateY(-1px);
-}
-.dev-card__link:hover {
-  text-decoration: underline;
-}
-
 .theme-toggle {
   position: absolute;
   top: 20px;
@@ -132,27 +248,16 @@
   transition: all 0.3s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
 .theme-toggle:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   opacity: 0.9;
 }
+.theme-toggle:active { transform: translateY(0); }
 
-.theme-toggle:active {
-  transform: translateY(0);
-}
+@keyframes App-logo-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Responsive design for mobile */
+/* Responsive */
 @media (max-width: 768px) {
   .theme-toggle {
     top: 10px;
