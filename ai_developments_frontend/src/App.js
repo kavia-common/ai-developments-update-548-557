@@ -1,47 +1,174 @@
-import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
+import React, { useEffect, useMemo, useState } from 'react';
 import './App.css';
+import Header from './components/Header';
+import Loader from './components/Loader';
+import ErrorBanner from './components/ErrorBanner';
+import EmptyState from './components/EmptyState';
+import DevCard from './components/DevCard';
+import useRecentDevelopments from './hooks/useRecentDevelopments';
 
-// PUBLIC_INTERFACE
+/**
+ * PUBLIC_INTERFACE
+ * App
+ * Main application shell for "AI Developments - Last 48 Hours" using the Ocean Professional theme.
+ * Integrates:
+ * - useRecentDevelopments for data fetching, debounced search, refresh, and states
+ * - Header with search, refresh, and optional theme toggle
+ * - Loader, ErrorBanner, EmptyState, and DevCard list
+ *
+ * Behavior:
+ * - Theme persisted per session via state; applied to document as data-theme attribute
+ * - Search input updates query in hook, which is debounced internally
+ * - Refresh button re-fetches data
+ * - Semantic layout and accessible labels
+ */
 function App() {
+  const {
+    filteredItems,
+    loading,
+    error,
+    lastUpdated,
+    query,
+    setQuery,
+    refresh,
+  } = useRecentDevelopments();
+
   const [theme, setTheme] = useState('light');
 
-  // Effect to apply theme to document element
+  // Apply theme to document root
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
   // PUBLIC_INTERFACE
   const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
+    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
   };
+
+  const lastUpdatedLabel = useMemo(() => {
+    if (!lastUpdated) return '';
+    const d = lastUpdated;
+    return `${d.toLocaleDateString()} ${d.toLocaleTimeString()}`;
+    // Optionally: could format nicer; keeping native for zero deps.
+  }, [lastUpdated]);
 
   return (
     <div className="App">
-      <header className="App-header">
-        <button 
-          className="theme-toggle" 
-          onClick={toggleTheme}
-          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+      <Header
+        title="AI Developments - Last 48 Hours"
+        subtitle="Curated updates across AI research, products, and community"
+        onToggleTheme={toggleTheme}
+        theme={theme}
+        actions={
+          <>
+            {/* Search input (debounced via hook) */}
+            <label htmlFor="search" className="sr-only" style={{ position: 'absolute', clip: 'rect(1px, 1px, 1px, 1px)' }}>
+              Search developments
+            </label>
+            <input
+              id="search"
+              type="search"
+              placeholder="Search titles…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              aria-label="Search developments"
+              style={{
+                padding: '8px 12px',
+                borderRadius: 8,
+                border: '1px solid var(--op-border, #e5e7eb)',
+                background: 'var(--op-surface, #ffffff)',
+                color: 'var(--op-text, #111827)',
+                minWidth: 220,
+              }}
+            />
+            {/* Refresh button */}
+            <button
+              type="button"
+              className="op-btn op-btn--primary"
+              onClick={refresh}
+              disabled={loading}
+              style={{ padding: '8px 12px', borderRadius: 8, cursor: 'pointer' }}
+              aria-label="Refresh developments"
+              title="Refresh"
+            >
+              ⟳ Refresh
+            </button>
+          </>
+        }
+      />
+
+      <main
+        role="main"
+        className="container"
+        style={{
+          padding: '20px',
+          display: 'grid',
+          gap: 16,
+        }}
+      >
+        {/* Status Row */}
+        <section aria-label="Status" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {loading ? <Loader label="Loading developments" /> : null}
+          {!loading && lastUpdated ? (
+            <p style={{ margin: 0, fontSize: 12, color: 'var(--op-text-muted, #6b7280)' }}>
+              Last updated: {lastUpdatedLabel}
+            </p>
+          ) : null}
+        </section>
+
+        {/* Error Banner */}
+        {error ? (
+          <ErrorBanner
+            message={error}
+            onRetry={refresh}
+          />
+        ) : null}
+
+        {/* Results */}
+        <section
+          aria-label="AI developments list"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr',
+            gap: 12,
+          }}
         >
-          {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
-        </button>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <p>
-          Current theme: <strong>{theme}</strong>
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+          {!loading && !error && filteredItems.length === 0 ? (
+            <EmptyState
+              title="No developments found"
+              description="Try a different search term or refresh to get the latest items."
+              action={
+                <button
+                  type="button"
+                  className="op-btn op-btn--primary"
+                  onClick={refresh}
+                  aria-label="Refresh"
+                  style={{ padding: '8px 12px', borderRadius: 8, cursor: 'pointer' }}
+                >
+                  Refresh
+                </button>
+              }
+            />
+          ) : null}
+
+          {!error && filteredItems.map((item) => (
+            <DevCard key={item.id} item={item} />
+          ))}
+        </section>
+      </main>
+
+      {/* Optional footer */}
+      <footer
+        className="container"
+        aria-label="Footer"
+        style={{
+          padding: '24px 20px 40px',
+          color: 'var(--op-text-muted, #6b7280)',
+          fontSize: 12,
+        }}
+      >
+        <span>Ocean Professional theme • {new Date().getFullYear()}</span>
+      </footer>
     </div>
   );
 }
