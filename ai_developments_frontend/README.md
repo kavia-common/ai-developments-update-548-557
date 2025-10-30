@@ -31,6 +31,11 @@ This app lists the latest AI developments from the last 48 hours. It can fetch d
 
 Open http://localhost:3000 in your browser.
 
+Health Check
+- A lightweight health-check page is available at /health (e.g., http://localhost:3000/health)
+- Renders instantly with status OK, timestamp, version, and a small JSON block.
+- No external API calls are performed on this route.
+
 ## Configuration
 
 This project uses Create React App, so env vars must be prefixed with REACT_APP_. Configure the following in your .env:

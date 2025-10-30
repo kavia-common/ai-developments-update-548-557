@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 /**
  * PUBLIC_INTERFACE
@@ -72,6 +73,23 @@ export default function Header({ title, subtitle, onToggleTheme, theme = "light"
           aria-label="Header actions"
           style={{ display: "flex", alignItems: "center", gap: 8 }}
         >
+          {/* Health link - subtle ghost style */}
+          <Link
+            to="/health"
+            className="op-btn op-btn--ghost"
+            aria-label="Open Health Check page"
+            title="Health"
+            style={{
+              padding: "8px 12px",
+              borderRadius: 8,
+              border: "1px solid var(--op-border, #e5e7eb)",
+              background: "var(--op-surface, #ffffff)",
+              color: "var(--op-text, #111827)",
+              textDecoration: "none",
+            }}
+          >
+            Health
+          </Link>
           {actions}
           {onToggleTheme ? (
             <button
